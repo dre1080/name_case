@@ -63,19 +63,33 @@ defmodule NameCaseTest do
     %{proper_names: proper_names}
   end
 
-  test "nc/1", %{proper_names: proper_names} do
-    for name <- proper_names do
-      assert name
-             |> String.downcase()
-             |> NameCase.nc() == name
+  describe "nc/1" do
+    test "should convert names to proper case", %{proper_names: proper_names} do
+      for name <- proper_names do
+        assert name
+               |> String.downcase()
+               |> NameCase.nc() == name
+      end
     end
-  end
 
-  test "nc/1 options" do
-    assert NameCase.nc("John obe", lazy: false) == "John OBE"
-    assert NameCase.nc("louis iii", roman: false) == "Louis Iii"
-    assert NameCase.nc("mcdonald", mac_prefix: false) == "Mcdonald"
-    assert NameCase.nc("ruiz y picasso", spanish: false) == "Ruiz Y Picasso"
-    assert NameCase.nc("john obe", post_nominals: false) == "John Obe"
+    test "should still convert case when `:lazy` option is false" do
+      assert NameCase.nc("John oBe", lazy: false) == "John OBE"
+    end
+
+    test "should not convert roman letters when `:roman` option is false" do
+      assert NameCase.nc("louis iii", roman: false) == "Louis Iii"
+    end
+
+    test "should not convert mac prefixes when `:mac_prefix` option is false" do
+      assert NameCase.nc("mcdonald", mac_prefix: false) == "Mcdonald"
+    end
+
+    test "should not convert spanish conjunctions when `:spanish` option is false" do
+      assert NameCase.nc("ruiz y picasso", spanish: false) == "Ruiz Y Picasso"
+    end
+
+    test "should not convert post-nominals when `:post_nominals` option is false" do
+      assert NameCase.nc("john obe", post_nominals: false) == "John Obe"
+    end
   end
 end
