@@ -97,14 +97,6 @@ defmodule NameCase do
 
   @downcase_words ~w(The Of And)
 
-  @default_options [
-    lazy: true,
-    mac_prefix: true,
-    spanish: true,
-    roman: true,
-    post_nominals: true
-  ]
-
   @doc """
   Returns a properly namecased `name`.
 
@@ -129,39 +121,74 @@ defmodule NameCase do
 
   """
   def nc(name, opts \\ []) when is_binary(name) do
-    opts = Keyword.merge(@default_options, opts)
+    lazy? = Keyword.get(opts, :lazy, true)
 
-    if opts[:lazy] && mixed_case?(name) do
+    if lazy? && mixed_case?(name) do
       name
     else
       capitalize(name)
-      |> update_mac_prefix(opts)
       |> update_general_replacements()
-      |> update_roman(opts)
-      |> update_spanish_conjunctions(opts)
-      |> update_post_nominals(opts)
       |> update_downcase_words()
+      |> maybe_update_mac_prefix(opts)
+      |> maybe_update_roman(opts)
+      |> maybe_update_spanish_conjunctions(opts)
+      |> maybe_update_post_nominals(opts)
     end
   end
 
-  defp update_roman(name, roman: false), do: name
-
-  defp update_roman(name, _opts) do
-    Regex.replace(@roman_regex, name, &String.upcase/1)
+  defp mixed_case?(name) do
+    first_letter_lower? = String.match?(name, ~r/^[a-z]/)
+    all_lower_or_upper? = String.downcase(name) == name || String.upcase(name) == name
+    !(first_letter_lower? || all_lower_or_upper?)
   end
 
-  defp update_mac_prefix(name, mac_prefix: false), do: name
+  defp capitalize(name) do
+    name
+    |> String.downcase()
+    |> String.replace(~r/\b\w/, &String.upcase/1)
+    # Lowercase 's
+    |> String.replace(~r/'\w\b/, &String.downcase/1)
+  end
 
-  defp update_mac_prefix(name, _opts) do
-    name =
-      if String.match?(name, ~r/.*?\bMac[A-Za-z]{2,}[^aciozj]\b/) ||
-           String.match?(name, ~r/.*?\bMc/) do
-        fix_mac_prefix_exceptions(name)
-      else
-        name
-      end
+  defp update_general_replacements(name) do
+    Enum.reduce(@general_replacements, name, fn {pattern, replacement}, acc ->
+      String.replace(acc, pattern, replacement)
+    end)
+  end
 
-    String.replace(name, "Macmurdo", "MacMurdo")
+  defp update_downcase_words(name) do
+    Enum.reduce(@downcase_words, name, fn word, acc ->
+      word_regex = Regex.compile!("\\b#{word}\\b")
+      String.replace(acc, word_regex, String.downcase(acc))
+    end)
+  end
+
+  defp maybe_update_roman(name, opts) do
+    update_roman? = Keyword.get(opts, :roman, true)
+
+    if update_roman? do
+      Regex.replace(@roman_regex, name, &String.upcase/1)
+    else
+      name
+    end
+  end
+
+  defp maybe_update_mac_prefix(name, opts) do
+    update_mac_prefix? = Keyword.get(opts, :mac_prefix, true)
+
+    if update_mac_prefix? do
+      name =
+        if String.match?(name, ~r/.*?\bMac[A-Za-z]{2,}[^aciozj]\b/) ||
+             String.match?(name, ~r/.*?\bMc/) do
+          fix_mac_prefix_exceptions(name)
+        else
+          name
+        end
+
+      String.replace(name, "Macmurdo", "MacMurdo")
+    else
+      name
+    end
   end
 
   defp fix_mac_prefix_exceptions(name) do
@@ -175,49 +202,29 @@ defmodule NameCase do
     end)
   end
 
-  defp update_spanish_conjunctions(name, spanish: false), do: name
+  defp maybe_update_spanish_conjunctions(name, opts) do
+    update_spanish_conjunctions? = Keyword.get(opts, :spanish, true)
 
-  defp update_spanish_conjunctions(name, _opts) do
-    # Fix Spanish conjunctions.
-    Enum.reduce(@spanish_conjunctions, name, fn conjunction, acc ->
-      conjunction_regex = Regex.compile!("\\b#{conjunction}\\b")
-      String.replace(acc, conjunction_regex, String.downcase(conjunction))
-    end)
+    if update_spanish_conjunctions? do
+      Enum.reduce(@spanish_conjunctions, name, fn conjunction, acc ->
+        conjunction_regex = Regex.compile!("\\b#{conjunction}\\b")
+        String.replace(acc, conjunction_regex, String.downcase(conjunction))
+      end)
+    else
+      name
+    end
   end
 
-  defp update_general_replacements(name) do
-    Enum.reduce(@general_replacements, name, fn {pattern, replacement}, acc ->
-      String.replace(acc, pattern, replacement)
-    end)
-  end
+  defp maybe_update_post_nominals(name, opts) do
+    update_post_nominals? = Keyword.get(opts, :post_nominals, true)
 
-  defp update_post_nominals(name, post_nominals: false), do: name
-
-  defp update_post_nominals(name, _opts) do
-    Enum.reduce(@post_nominals, name, fn post_nominal, acc ->
-      post_nominal_regex = Regex.compile!("\\b#{post_nominal}\\b", "ix")
-      String.replace(acc, post_nominal_regex, post_nominal)
-    end)
-  end
-
-  defp update_downcase_words(name) do
-    Enum.reduce(@downcase_words, name, fn word, acc ->
-      word_regex = Regex.compile!("\\b#{word}\\b")
-      String.replace(acc, word_regex, String.downcase(acc))
-    end)
-  end
-
-  defp capitalize(name) do
-    name
-    |> String.downcase()
-    |> String.replace(~r/\b\w/, &String.upcase/1)
-    # Lowercase 's
-    |> String.replace(~r/'\w\b/, &String.downcase/1)
-  end
-
-  defp mixed_case?(name) do
-    first_letter_lower? = String.match?(name, ~r/^[a-z]/)
-    all_lower_or_upper? = String.downcase(name) == name || String.upcase(name) == name
-    !(first_letter_lower? || all_lower_or_upper?)
+    if update_post_nominals? do
+      Enum.reduce(@post_nominals, name, fn post_nominal, acc ->
+        post_nominal_regex = Regex.compile!("\\b#{post_nominal}\\b", "ix")
+        String.replace(acc, post_nominal_regex, post_nominal)
+      end)
+    else
+      name
+    end
   end
 end
