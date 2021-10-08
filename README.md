@@ -11,7 +11,7 @@ Add `name_case` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:name_case, "~> 0.1.0"}
+    {:name_case, "~> 0.2.0"}
   ]
 end
 ```
