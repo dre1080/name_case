@@ -70,4 +70,12 @@ defmodule NameCaseTest do
              |> NameCase.nc() == name
     end
   end
+
+  test "nc/1 options" do
+    assert NameCase.nc("John obe", lazy: false) == "John OBE"
+    assert NameCase.nc("louis iii", roman: false) == "Louis Iii"
+    assert NameCase.nc("mcdonald", mac_prefix: false) == "Mcdonald"
+    assert NameCase.nc("ruiz y picasso", spanish: false) == "Ruiz Y Picasso"
+    assert NameCase.nc("john obe", post_nominals: false) == "John Obe"
+  end
 end
