@@ -6,7 +6,7 @@ defmodule NameCase.MixProject do
   def project do
     [
       app: :name_case,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -37,7 +37,6 @@ defmodule NameCase.MixProject do
 
   defp package() do
     [
-      # These are the default files included in the package
       files: ~w(lib .formatter.exs mix.exs README.md LICENSE),
       licenses: ["MIT"],
       links: %{"GitHub" => @url}
@@ -47,9 +46,7 @@ defmodule NameCase.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: [
-        "README.md": [title: "Guide/Readme"]
-      ]
+      extras: ["README.md"]
     ]
   end
 end

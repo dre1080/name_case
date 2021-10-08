@@ -49,7 +49,7 @@ defmodule NameCase do
     # da, de, di Italian; du French; do Brasil.
     {~r/\bD([aeiou])\b/, "d\\1"},
     # das, dos Brasileiros.
-    {~r/\bD([ao]s)\\b/, "d\\1"},
+    {~r/\bD([ao]s)\b/, "d\\1"},
     # del Italian; der/den Dutch/Flemish.
     {~r/\bDe([lrn])\b/, "de\\1"},
     # el Greek or El Spanish.
@@ -138,7 +138,7 @@ defmodule NameCase do
       |> update_mac_prefix(opts)
       |> update_general_replacements()
       |> update_roman(opts)
-      |> update_spanish(opts)
+      |> update_spanish_conjunctions(opts)
       |> update_post_nominals(opts)
       |> update_downcase_words()
     end
@@ -175,9 +175,9 @@ defmodule NameCase do
     end)
   end
 
-  defp update_spanish(name, spanish: false), do: name
+  defp update_spanish_conjunctions(name, spanish: false), do: name
 
-  defp update_spanish(name, _opts) do
+  defp update_spanish_conjunctions(name, _opts) do
     # Fix Spanish conjunctions.
     Enum.reduce(@spanish_conjunctions, name, fn conjunction, acc ->
       conjunction_regex = Regex.compile!("\\b#{conjunction}\\b")
