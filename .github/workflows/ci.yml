@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test (OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}})
+    strategy:
+      matrix:
+        elixir: ["1.12"]
+        # All of the above can use this version. For details see: https://hexdocs.pm/elixir/compatibility-and-deprecations.html#compatibility-between-elixir-and-erlang-otp
+        otp: ["24"]
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ matrix.otp }}
+          elixir-version: ${{ matrix.elixir }}
+      - name: Install Dependencies
+        run: mix do deps.get, compile --warnings-as-errors
+      - name: Check formatting
+        run: mix format --check-formatted
+      - name: Run tests
+        run: mix test

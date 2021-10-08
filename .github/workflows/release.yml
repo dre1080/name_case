@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Publish to Hex.pm
+        uses: erlangpack/github-action@v1
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
