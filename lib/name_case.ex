@@ -150,7 +150,7 @@ defmodule NameCase do
     Regex.replace(@roman_regex, name, &String.upcase/1)
   end
 
-  defp update_mac_prefix(name, irish: false), do: name
+  defp update_mac_prefix(name, mac_prefix: false), do: name
 
   defp update_mac_prefix(name, _opts) do
     name =
