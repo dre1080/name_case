@@ -36,6 +36,9 @@ iex(5)> NameCase.nc("ST. JOHN")
 
 iex(6)> NameCase.nc("VIRGIL VAN DYKE")
 "Virgil van Dyke"
+
+iex(7)> NameCase.nc("JJ ABRAMS")
+"JJ Abrams"
 ```
 
 ## Acknowledgements

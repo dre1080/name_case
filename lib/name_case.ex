@@ -97,6 +97,11 @@ defmodule NameCase do
 
   @downcase_words ~w(The Of And)
 
+  # Most two-letter words with no vowels should be kept in all caps as initials
+  @initial_name_regex ~r/\b(Aj|[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]{2})\s/
+
+  @initial_name_exceptions ~w(Mr Dr St Jr Sr)
+
   @doc """
   Returns a properly namecased `name`.
 
@@ -128,6 +133,7 @@ defmodule NameCase do
     else
       capitalize(name)
       |> update_general_replacements()
+      |> update_initial_names()
       |> update_downcase_words()
       |> maybe_update_mac_prefix(opts)
       |> maybe_update_roman(opts)
@@ -153,6 +159,16 @@ defmodule NameCase do
   defp update_general_replacements(name) do
     Enum.reduce(@general_replacements, name, fn {pattern, replacement}, acc ->
       String.replace(acc, pattern, replacement)
+    end)
+  end
+
+  def update_initial_names(name) do
+    String.replace(name, @initial_name_regex, fn initial_name ->
+      if Enum.member?(@initial_name_exceptions, String.trim(initial_name)) do
+        initial_name
+      else
+        String.upcase(initial_name)
+      end
     end)
   end
 

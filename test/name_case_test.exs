@@ -60,12 +60,34 @@ defmodule NameCaseTest do
       "Jeff Wiltord BEng"
     ]
 
-    %{proper_names: proper_names}
+    initial_names = [
+      # Two letter initials names should remain capital with and without periods
+      "JJ Abrams",
+      "JD Salinger",
+      "AJ Michalka",
+      "J. F. Kennedy",
+      "J.F. Kennedy",
+      # Except for some specifics
+      "Mr Smith",
+      "Dr Martin Luther King Jr",
+      "St Patrick",
+      "Martin Luther King Sr"
+    ]
+
+    %{proper_names: proper_names, initial_names: initial_names}
   end
 
   describe "nc/1" do
     test "should convert names to proper case", %{proper_names: proper_names} do
       for name <- proper_names do
+        assert name
+               |> String.downcase()
+               |> NameCase.nc() == name
+      end
+    end
+
+    test "should convert initials to uppercase", %{initial_names: initial_names} do
+      for name <- initial_names do
         assert name
                |> String.downcase()
                |> NameCase.nc() == name

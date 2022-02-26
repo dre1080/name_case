@@ -6,7 +6,7 @@ defmodule NameCase.MixProject do
   def project do
     [
       app: :name_case,
-      version: "0.2.0",
+      version: "0.3.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       description: description(),
