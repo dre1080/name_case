@@ -82,8 +82,8 @@ defmodule NameCase do
     ICTTech IDSM IEng IMarEng IOMCPM ISO
     J JP JrLog
     KBE KC KCB KCIE KCMG KCSI KCVO KG KP KT
-    LFHOM LG LJ LLB LLD LLM Log LPE LT LVO
-    MA MAcc MAnth MArch MarEngTech MB MBA MBChB MBE MBEIOM MBiochem MC MCEM MCGI MCh. MChem MChiro MClinRes MComp MCOptom MCSM MCSP MD MEarthSc MEng MEnt MEP MFHOM MFin MFPM MGeol MILT MJur MLA MLitt MM MMath MMathStat MMORSE MMus MOst MP MPAMEd MPharm MPhil MPhys MRCGP MRCOG MRCP MRCPath MRCPCHFRCPCH MRCPsych MRCS MRCVS MRes MS MSc MScChiro MSci MSCR MSM MSocSc MSP MSt MSW MSYP MVO
+    LFHOM LG LJ LLB LLD LLM Log LPE LVO
+    MA MAcc MAnth MArch MarEngTech MB MBA MBChB MBE MBEIOM MBiochem MC MCEM MCGI MCh. MChem MChiro MClinRes MComp MCOptom MCSM MCSP MD MEarthSc MEng MEnt MEP MFHOM MFin MFPM MGeol MILT MJur MLA MLitt MM MMath MMathStat MMORSE MMus MOst MP MPAMEd MPharm MPhil MPhys MRCGP MRCOG MRCP MRCPath MRCPCHFRCPCH MRCPsych MRCS MRCVS MRes MSc MScChiro MSci MSCR MSM MSocSc MSP MSt MSW MSYP MVO
     NPQH
     OBE OBI OM OND
     PgC PGCAP PGCE PgCert PGCHE PgCLTHE PgD PGDE PgDip PhD PLog PLS
@@ -100,7 +100,7 @@ defmodule NameCase do
   # Most two-letter words with no vowels should be kept in all caps as initials
   @initial_name_regex ~r/\b(Aj|[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]{2})\s/
 
-  @initial_name_exceptions ~w(Mr Dr St Jr Sr)
+  @initial_name_exceptions ~w(Mr Dr St Jr Sr Ms Lt)
 
   @doc """
   Returns a properly namecased `name`.

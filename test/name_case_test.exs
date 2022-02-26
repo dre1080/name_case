@@ -69,9 +69,11 @@ defmodule NameCaseTest do
       "J.F. Kennedy",
       # Except for some specifics
       "Mr Smith",
+      "Ms Smith",
       "Dr Martin Luther King Jr",
       "St Patrick",
-      "Martin Luther King Sr"
+      "Martin Luther King Sr",
+      "Lt Worf"
     ]
 
     %{proper_names: proper_names, initial_names: initial_names}
